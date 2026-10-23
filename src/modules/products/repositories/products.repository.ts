@@ -51,4 +51,8 @@ export class ProductsRepository extends BaseRepository<ProductDao> {
   async update(id: string, patch: Partial<ProductInputBo>): Promise<void> {
     await this.repo().update({ id }, patch);
   }
+
+  async delete(id: string): Promise<void> {
+    await this.repo().delete({ id });
+  }
 }

@@ -169,9 +169,9 @@ export class RedemptionsService {
       if (!reward.eligibleRoles.includes(role)) throw AppException.rule(ErrorCode.INVALID_STATE, 'This reward is not available for your account type.');
       if (reward.stock <= 0) throw AppException.rule(ErrorCode.OUT_OF_STOCK, 'This reward is out of stock.');
 
-      const [available, reserved] = await Promise.all([this.points.available(userId, manager), this.redemptions.reservedPoints(userId, manager)]);
-      if (available - reserved < reward.pointsRequired) {
-        throw AppException.rule(ErrorCode.INSUFFICIENT_POINTS, 'Not enough points for this reward.', { available, reserved, required: reward.pointsRequired });
+      const available = await this.points.available(userId, manager);
+      if (available < reward.pointsRequired) {
+        throw AppException.rule(ErrorCode.INSUFFICIENT_POINTS, 'Not enough points for this reward.', { available, required: reward.pointsRequired });
       }
       const redemptionId = await this.redemptions.insert({ userId, userRole: role, rewardId, pointsCost: reward.pointsRequired, deliveryAddress }, manager);
       await this.audit.recordEvent({ id: userId, name: participant.name }, { entityType: 'redemption', entityId: redemptionId, action: 'Redemption requested from app' }, manager);

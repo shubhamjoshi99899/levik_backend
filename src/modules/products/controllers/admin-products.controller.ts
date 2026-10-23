@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Patch, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, Param, Patch, Post, Query } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { actorFrom } from '../../../common/bo/actor.bo.js';
 import { CurrentUser } from '../../../common/decorators/current-user.decorator.js';
@@ -38,6 +38,12 @@ export class AdminProductsController {
       rewardEligible: body.rewardEligible ?? true,
     });
     return ProductMapper.toDto(product);
+  }
+
+  @Delete(':id')
+  @HttpCode(204)
+  async delete(@CurrentUser() user: AuthenticatedUser, @Param('id') id: string): Promise<void> {
+    await this.products.delete(actorFrom(user), id);
   }
 
   @Patch(':id')

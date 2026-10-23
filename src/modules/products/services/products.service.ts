@@ -70,4 +70,10 @@ export class ProductsService {
     await this.audit.record(actor, { action, entityType: 'Product', entityId: id, summary: `${current.name} · changed: ${changed.join(', ')}` });
     return this.get(id);
   }
+
+  async delete(actor: ActorBo, id: string): Promise<void> {
+    const product = await this.get(id);
+    await this.products.delete(id);
+    await this.audit.record(actor, { action: 'Product deleted', entityType: 'Product', entityId: id, summary: `${product.name} (${product.modelCode}) deleted` });
+  }
 }
